@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
 } from '@nestjs/common';
 import { MenuService } from './menu.service';
 
@@ -14,8 +15,13 @@ export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   @Post('/:categoryId')
-  createMenu(@Param('categoryId') categoryId: number, @Body() data) {
-    this.menuService.createMenu(
+  createMenu(
+    @Req() req: Request,
+    @Param('categoryId') categoryId: number,
+    @Body() data,
+  ) {
+    return this.menuService.createMenu(
+      req,
       categoryId,
       data.name,
       data.description,
@@ -38,8 +44,9 @@ export class MenuController {
   }
 
   @Patch('/:categoryId/:menuId')
-  updateMenu(@Param() paramData, @Body() bodyData) {
+  updateMenu(@Req() req: Request, @Param() paramData, @Body() bodyData) {
     return this.menuService.updateMenu(
+      req,
       paramData.categoryId,
       paramData.menuId,
       bodyData.name,
@@ -52,9 +59,10 @@ export class MenuController {
 
   @Delete('/:categoryId/:menuId')
   deleteMenu(
+    @Req() req: Request,
     @Param('categoryId') categoryId: number,
     @Param('menuId') menuId: number,
   ) {
-    return this.menuService.deleteMenu(categoryId, menuId);
+    return this.menuService.deleteMenu(req, categoryId, menuId);
   }
 }

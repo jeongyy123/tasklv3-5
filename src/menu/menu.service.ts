@@ -2,12 +2,14 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Menu } from './menu.entity';
 import { MenuRepository } from './menu.repository';
 import { CategoryRepository } from 'src/category/category.repository';
 import { MenuStatus } from './menu-status.enum';
+import { UserType } from 'src/user/user-type.enum';
 
 @Injectable()
 export class MenuService {
@@ -19,12 +21,17 @@ export class MenuService {
 
   /* 메뉴 등록 */
   async createMenu(
+    req: Request,
     categoryId: number,
     name: string,
     description: string,
     image: string,
     price: number,
   ) {
+    if (req['user'].userType !== UserType.OWNER) {
+      throw new UnauthorizedException(`사장님만 사용할 수 있는 API입니다.`);
+    }
+
     const category = await this.checkCategory(categoryId);
 
     await this.checkMenu(name);
@@ -37,15 +44,15 @@ export class MenuService {
     menu.price = price;
     menu.status = MenuStatus.FOR_SALE;
 
-    const FoundMenu = await this.menuReposioty.findOne({
+    const foundMenu = await this.menuReposioty.findOne({
       where: { deletedAt: null },
       order: { order: 'DESC' },
     });
 
-    if (!FoundMenu) {
+    if (!foundMenu) {
       menu.order = 1;
     } else {
-      menu.order = FoundMenu.order + 1;
+      menu.order = foundMenu.order + 1;
     }
 
     await this.menuReposioty.save(menu);
@@ -69,6 +76,7 @@ export class MenuService {
 
   /* 메뉴 수정*/
   async updateMenu(
+    req: Request,
     categoryId: number,
     menuId: number,
     name: string,
@@ -77,6 +85,10 @@ export class MenuService {
     order: number,
     status: MenuStatus,
   ) {
+    if (req['user'].userType !== UserType.OWNER) {
+      throw new UnauthorizedException(`사장님만 사용할 수 있는 API입니다.`);
+    }
+
     await this.checkCategory(categoryId);
 
     await this.checkMenu(name);
@@ -102,7 +114,11 @@ export class MenuService {
   }
 
   /* 메뉴 삭제*/
-  async deleteMenu(categoryId: number, menuId: number) {
+  async deleteMenu(req: Request, categoryId: number, menuId: number) {
+    if (req['user'].userType !== UserType.OWNER) {
+      throw new UnauthorizedException(`사장님만 사용할 수 있는 API입니다.`);
+    }
+
     await this.checkCategory(categoryId);
 
     await this.menuReposioty.softDelete(menuId);

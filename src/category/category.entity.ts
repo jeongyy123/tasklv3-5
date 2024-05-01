@@ -31,5 +31,4 @@ export class Category {
 
   @OneToMany(() => Menu, (menu) => menu.category)
   menus: Menu[];
-  static categoryId: any;
 }
