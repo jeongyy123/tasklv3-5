@@ -36,7 +36,7 @@ export class CategoryController {
       req,
       categoryId,
       data.name,
-      data.order,
+      data.categoryOrder,
     );
   }
 

@@ -52,7 +52,7 @@ export class MenuController {
       bodyData.name,
       bodyData.description,
       bodyData.price,
-      bodyData.order,
+      bodyData.menuOrder,
       bodyData.status,
     );
   }

@@ -15,6 +15,7 @@ import { UserModule } from './user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from './config/jwt.config.service';
 import { AuthMiddleware } from './auth/auth.middleware';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AuthMiddleware } from './auth/auth.middleware';
     CategoryModule,
     MenuModule,
     UserModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService, AuthMiddleware],
@@ -47,6 +49,10 @@ export class AppModule implements NestModule {
         { path: 'menu/:categoryId', method: RequestMethod.POST },
         { path: 'menu/:categoryId/:menuId', method: RequestMethod.PATCH },
         { path: 'menu/:categoryId/:menuId', method: RequestMethod.DELETE },
+        { path: 'order', method: RequestMethod.POST },
+        { path: 'order/customer', method: RequestMethod.GET },
+        { path: 'order/owner', method: RequestMethod.GET },
+        { path: 'order/:orderId/status', method: RequestMethod.PATCH },
       );
   }
 }

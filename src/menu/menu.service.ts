@@ -46,13 +46,13 @@ export class MenuService {
 
     const foundMenu = await this.menuReposioty.findOne({
       where: { deletedAt: null },
-      order: { order: 'DESC' },
+      order: { menuOrder: 'DESC' },
     });
 
     if (!foundMenu) {
-      menu.order = 1;
+      menu.menuOrder = 1;
     } else {
-      menu.order = foundMenu.order + 1;
+      menu.menuOrder = foundMenu.menuOrder + 1;
     }
 
     await this.menuReposioty.save(menu);
@@ -82,7 +82,7 @@ export class MenuService {
     name: string,
     description: string,
     price: number,
-    order: number,
+    menuOrder: number,
     status: MenuStatus,
   ) {
     if (req['user'].userType !== UserType.OWNER) {
@@ -107,7 +107,7 @@ export class MenuService {
       name,
       description,
       price,
-      order,
+      menuOrder,
       status: capitalStatus,
     });
     return { message: '메뉴가 수정되었습니다.' };

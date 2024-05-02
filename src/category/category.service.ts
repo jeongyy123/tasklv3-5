@@ -37,13 +37,13 @@ export class CategoryService {
 
     const foundCategory = await this.categoryRepository.findOne({
       where: { deletedAt: null },
-      order: { order: 'DESC' },
+      order: { categoryOrder: 'DESC' },
     });
 
     if (!foundCategory) {
-      category.order = 1;
+      category.categoryOrder = 1;
     } else {
-      category.order = foundCategory.order + 1;
+      category.categoryOrder = foundCategory.categoryOrder + 1;
     }
 
     await this.categoryRepository.save(category);
@@ -61,7 +61,7 @@ export class CategoryService {
     req: Request,
     categoryId: number,
     name: string,
-    order: number,
+    categoryOrder: number,
   ) {
     if (req['user'].userType !== UserType.OWNER) {
       throw new UnauthorizedException(`사장님만 사용할 수 있는 API입니다.`);
@@ -83,7 +83,7 @@ export class CategoryService {
       throw new ConflictException(`${name}를 가진 카테고리가 이미 존재합니다.`);
     }
 
-    await this.categoryRepository.update(categoryId, { name, order });
+    await this.categoryRepository.update(categoryId, { name, categoryOrder });
 
     return { message: '카테고리 정보를 수정하였습니다.' };
   }

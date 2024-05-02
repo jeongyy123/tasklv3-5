@@ -1,12 +1,4 @@
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Length,
-  Matches,
-} from 'class-validator';
-import { UserType } from 'src/user/user-type.enum';
+import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 
 export class SignupUserDto {
   @IsNotEmpty()
@@ -24,8 +16,4 @@ export class SignupUserDto {
     message: '비밀번호에 닉네임을 포함할 수 없습니다.',
   })
   password: string;
-
-  @IsOptional()
-  @IsEnum(UserType)
-  userType: UserType = UserType.CUSTOMER;
 }

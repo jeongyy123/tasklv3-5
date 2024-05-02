@@ -22,7 +22,7 @@ export class UserService {
     const existUser = await this.getUserInfo(nickname);
 
     if (existUser) {
-      throw new NotFoundException(`해당 ${nickname}를 가진 유저가 존재합니다`);
+      throw new NotFoundException(`해당 nickname을 가진 유저가 존재합니다`);
     }
 
     const insertResult = await this.userRepository.insert({
@@ -33,7 +33,7 @@ export class UserService {
 
     const payload = {
       id: insertResult.identifiers[0].id,
-      userStatus: existUser.userType,
+      userType: insertResult['userType'],
     };
     const accessToken = await this.jwtService.signAsync(payload);
     return { message: '회원가입에 성공했습니다.' };

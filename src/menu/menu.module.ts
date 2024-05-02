@@ -5,11 +5,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Menu } from './menu.entity';
 import { CategoryRepository } from 'src/category/category.repository';
 import { Category } from 'src/category/category.entity';
-import { MenuRepository } from './menu.repository';
+import { UserRepository } from 'src/user/user.repository';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtConfigService } from 'src/config/jwt.config.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Menu, Category])],
+  imports: [
+    TypeOrmModule.forFeature([Menu, Category]),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useClass: JwtConfigService,
+      inject: [ConfigService],
+    }),
+  ],
   controllers: [MenuController],
-  providers: [MenuService, MenuRepository, CategoryRepository],
+  providers: [MenuService, CategoryRepository, UserRepository],
 })
 export class MenuModule {}

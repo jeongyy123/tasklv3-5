@@ -1,9 +1,12 @@
 import { Menu } from 'src/menu/menu.entity';
+import { User } from 'src/user/user.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -18,7 +21,7 @@ export class Category {
   name: string;
 
   @Column('int')
-  order: number;
+  categoryOrder: number;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -29,6 +32,12 @@ export class Category {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
+  //menu 연결
   @OneToMany(() => Menu, (menu) => menu.category)
   menus: Menu[];
+
+  //user 연결
+  @ManyToOne(() => User, (user) => user.categories)
+  @JoinColumn({ name: 'userId', referencedColumnName: 'userId' })
+  user: User;
 }
