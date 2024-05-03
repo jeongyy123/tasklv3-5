@@ -12,15 +12,15 @@ export class OrderController {
     return await this.orderService.createOrder(req, data.menuId, data.quantity);
   }
 
-  // @Get('/customer')
-  // async getOrderByCustomer(@Req() req: Request) {
-  //   return await this.orderService.getOrderByCustomer(req);
-  // }
+  @Get('/customer')
+  async getOrderByCustomer(@Req() req: Request) {
+    return await this.orderService.getOrderByCustomer(req);
+  }
 
-  // @Get('/owner')
-  // async getOrderByOwner(@Req() req: Request) {
-  //   await this.orderService.getOrderByOwner(req, req.userId);
-  // }
+  @Get('/owner')
+  async getOrderByOwner(@Req() req: Request) {
+    return await this.orderService.getOrderByOwner(req);
+  }
 
   @Patch('/:orderId/status')
   async updateOrderType(

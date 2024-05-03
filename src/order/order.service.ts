@@ -10,6 +10,7 @@ import { UserType } from 'src/user/user-type.enum';
 import { MenuRepository } from 'src/menu/menu.repository';
 import { OrderType } from './order-type.enum';
 import { UserRepository } from 'src/user/user.repository';
+import { getRepository } from 'typeorm';
 
 @Injectable()
 export class OrderService {
@@ -48,58 +49,67 @@ export class OrderService {
   }
 
   /* 사용자 주문 내역 조회 */
-  // async getOrderByCustomer(req: Request) {
+  async getOrderByCustomer(req: Request) {
+    const userType = req['user'].userType;
+    const userId = req['user'].id;
 
-  //   const userType = req['user'].userType;
-  //   const userUserId = req['user'].userId;
+    if (userType !== UserType.CUSTOMER) {
+      throw new UnauthorizedException(`사용자만 이용할 수 있습니다.`);
+    }
 
-  //   if (userType !== UserType.CUSTOMER) {
-  //     throw new UnauthorizedException(`사용자만 이용할 수 있습니다.`);
-  //   }
+    const orders = await this.orderRepository
+      .createQueryBuilder('order')
+      .select([
+        'menu.name',
+        'menu.price',
+        'order.quantity',
+        'order.orderType',
+        'order.createdAt',
+      ])
+      .leftJoin('order.user', 'user')
+      .leftJoin('order.menu', 'menu')
+      .where('user.userId = :userId', { userId })
+      .addOrderBy('order.createdAt', 'DESC')
+      .getMany();
 
-  //   const orderQuantity = await this.orderRepository.find({
-  //     where: { user: { userId: userUserId } },
-  //     relations: { menu: true, user: true },
-  //   });
+    const totalPrice = await this.orderRepository
+      .createQueryBuilder('order')
+      .select(`SUM(order.quantity * menu.price)`, 'totalPrice')
+      .leftJoin('order.menu', 'menu')
+      .where('order.userId = :userId', { userId })
+      .getRawOne();
 
-  //   console.log('orderQuantity', orderQuantity);
-
-  //   const orders = await this.orderRepository.find({
-  //     where: { user: { userId: userUserId, deletedAt: null } },
-  //     relations: ['menu'],
-  //     order: { createdAt: 'DESC' },
-  //     select: ['menu.name', 'menu.price', 'quantity', 'orderType', 'createdAt'],
-  //   });
-
-  //   orders.forEach((order) => {
-  //     order.totalPrice = order.quantity * order.menu.price
-  //   });
-
-  //   console.log('주문들', orders);
-  //   return orders;
-  // }
+    return { totalPrice, orders };
+  }
 
   /* 사장님 주문 내역 조회 */
-  async getOrderByOwner(req: Request, userId: number) {
+  async getOrderByOwner(req: Request) {
     //사장인지 확인
     if (req['user'].userType !== UserType.OWNER) {
       throw new UnauthorizedException(`사장님만 이용할 수 있습니다.`);
     }
-    // 주문들어온 menuId를 menu.price 조회 및 해당 order.quantity랑 곱하기
-    // 사용자별 주문총합계, 주문한 메뉴, 이름, 가격, 갯수, 주문날짜
 
-    await this.orderRepository.find({
-      where: { deletedAt: null },
-      select: [
-        'userId',
-        'nickname',
-        'name',
-        'price',
-        'quantity',
-        'createdAt',
-        'totalPrice',
-      ],
-    });
+    const orders = await this.orderRepository
+      .createQueryBuilder('order')
+      .select([
+        'user.nickname',
+        'menu.name',
+        'menu.price',
+        'order.quantity',
+        'order.createdAt',
+      ])
+      .leftJoin('order.user', 'user')
+      .leftJoin('order.menu', 'menu')
+      .addOrderBy('order.createdAt', 'DESC')
+      .getMany();
+
+    const totalPrice = await this.orderRepository
+      .createQueryBuilder('order')
+      .select(`SUM(order.quantity * menu.price)`, 'totalPrice')
+      .leftJoin('order.menu', 'menu')
+      .getRawOne();
+
+    return { totalPrice, orders };
   }
 
   /* 주문 상태 변경 */
