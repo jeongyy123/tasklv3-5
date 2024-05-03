@@ -10,7 +10,6 @@ import { UserType } from 'src/user/user-type.enum';
 import { MenuRepository } from 'src/menu/menu.repository';
 import { OrderType } from './order-type.enum';
 import { UserRepository } from 'src/user/user.repository';
-import { getRepository } from 'typeorm';
 
 @Injectable()
 export class OrderService {
@@ -84,7 +83,6 @@ export class OrderService {
 
   /* 사장님 주문 내역 조회 */
   async getOrderByOwner(req: Request) {
-    //사장인지 확인
     if (req['user'].userType !== UserType.OWNER) {
       throw new UnauthorizedException(`사장님만 이용할 수 있습니다.`);
     }
