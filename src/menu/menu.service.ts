@@ -61,7 +61,9 @@ export class MenuService {
   }
 
   /* 카테고리별 메뉴 조회 */
-  getMenuByCategoryId(categoryId: number) {
+  async getMenuByCategoryId(categoryId: number) {
+    await this.checkCategory(categoryId);
+
     return this.menuReposioty.find({
       where: { category: { categoryId }, deletedAt: null },
     });
@@ -69,6 +71,8 @@ export class MenuService {
 
   /* 메뉴 상세 조회*/
   async getMenuByMenuId(categoryId: number, menuId: number) {
+    await this.checkCategory(categoryId);
+
     return await this.menuReposioty.findOne({
       where: { category: { categoryId }, menuId, deletedAt: null },
     });

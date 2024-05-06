@@ -1,6 +1,8 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 
 export class SignupUserDto {
+  @ApiProperty({ description: '닉네임', example: 'abcd' })
   @IsNotEmpty()
   @IsString()
   @Length(3, 15)
@@ -9,6 +11,7 @@ export class SignupUserDto {
   })
   nickname: string;
 
+  @ApiProperty({ description: '비밀번호', example: 'efgh1234' })
   @IsNotEmpty()
   @IsString()
   @Length(8, 20)

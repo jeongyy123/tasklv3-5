@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -22,7 +23,7 @@ export class UserService {
     const existUser = await this.getUserInfo(nickname);
 
     if (existUser) {
-      throw new NotFoundException(`해당 nickname을 가진 유저가 존재합니다`);
+      throw new ConflictException(`해당 nickname을 가진 유저가 존재합니다`);
     }
 
     const insertResult = await this.userRepository.insert({
